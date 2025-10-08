@@ -28,10 +28,24 @@ export class MiniSnakes {
     this.app.ticker.add((time) => {
       void time;
       const alteredPieces = this.logic.update();
-      // console.log(alteredPieces.head);
 
       this.head.position.x = alteredPieces.head.x;
       this.head.position.y = alteredPieces.head.y;
+
+      this.snakes.removeChildren();
+      this.snakes.addChild(
+        new Graphics()
+          .rect(this.head.position.x, this.head.position.y, 5, 5)
+          .fill("red")
+      );
+
+      this.logic.bodies.forEach((body) => {
+        this.snakes.addChild(
+          new Graphics().rect(body.x, body.y, 5, 5).fill("blue")
+        );
+      });
+
+      this.head = new Graphics().rect(0, 0, 5, 5).fill("red");
     });
   }
 

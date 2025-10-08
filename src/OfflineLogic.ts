@@ -35,7 +35,7 @@ export class OfflineLogic {
     this.width = width;
     this.height = height;
 
-    this.length = 5;
+    this.length = 50;
 
     this.head = generateRandomCoordinate(this.width, this.height);
     this.normalfood = generateRandomCoordinate(this.width, this.height);
@@ -48,11 +48,11 @@ export class OfflineLogic {
   }
 
   public update(): AlteredPieces {
-    this.head.x += this.velocity.x;
-    this.head.y += this.velocity.y;
-
     this.bodies.unshift({ x: this.head.x, y: this.head.y });
     this.bodies.pop();
+
+    this.head.x += this.velocity.x;
+    this.head.y += this.velocity.y;
 
     return {
       head: {
