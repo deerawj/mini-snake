@@ -1,10 +1,10 @@
-type Coordinate = {
+export type Coordinate = {
   x: number;
   y: number;
 };
 
-type SnakeBody = Coordinate;
-type Food = Coordinate;
+export type SnakeBody = Coordinate;
+export type Food = Coordinate;
 
 export type Velocity = { x: number; y: number };
 

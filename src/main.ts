@@ -16,13 +16,8 @@ export class MiniSnakes {
     this.logic = new OfflineLogic(window.innerWidth, window.innerHeight);
 
     this.head = new Graphics().rect(0, 0, 5, 5).fill("red");
-
     this.snakes.addChild(this.head);
-    this.interaction = new Interaction(this.logic.setVelocity);
-
-    // this.logic.bodies.forEach((body) => {
-    //   //
-    // });
+    this.interaction = new Interaction(this.logic.head, this.logic.setVelocity);
   }
 
   public async init() {

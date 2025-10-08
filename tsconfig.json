@@ -1,6 +1,7 @@
 {
+  // TODO: find the balance between as new as possible without ruining browser support
   "compilerOptions": {
-    "target": "es2022",
+    "target": "es6",
     "jsx": "react-jsx",
     "module": "es2022",
     "esModuleInterop": true,
