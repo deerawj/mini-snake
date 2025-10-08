@@ -86,7 +86,7 @@ function generateRandomInt(max) {
 }
 
 export function normalizeVelocity(velocity: Velocity, constant: number) {
-  const magnitude = Math.sqrt(velocity.x ** 2 + velocity.y ** 2);
+  const magnitude = Math.hypot(velocity.x, velocity.y);
   if (magnitude === 0) {
     return { x: 0, y: 0 };
   }
