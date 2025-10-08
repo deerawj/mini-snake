@@ -37,7 +37,7 @@ export class OfflineLogic {
 
     this.length = 5;
 
-    this.head = { x: 0, y: 0 }; // generateRandomCoordinate(this.width, this.height);
+    this.head = generateRandomCoordinate(this.width, this.height);
     this.normalfood = generateRandomCoordinate(this.width, this.height);
     this.specialFood = generateRandomCoordinate(this.width, this.height);
     this.poisonFood = generateRandomCoordinate(this.width, this.height);
@@ -71,7 +71,7 @@ export class OfflineLogic {
 }
 
 function generateRandomVelocity(): Velocity {
-  return { x: 1.0, y: 1.0 };
+  return normalizeVelocity({ x: 0.0, y: 1.0 }, 5);
 }
 
 function generateRandomCoordinate(width: number, height: number): Coordinate {
