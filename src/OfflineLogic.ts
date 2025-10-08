@@ -66,12 +66,12 @@ export class OfflineLogic {
 
   /// TODO: add the ability to premove / setVelocity queue
   public setVelocity = (velocity: Velocity) => {
-    this.velocity = normalizeVelocity(velocity, 5);
+    this.velocity = normalizeVelocity(velocity, 10);
   };
 }
 
 function generateRandomVelocity(): Velocity {
-  return normalizeVelocity({ x: 0.0, y: 1.0 }, 5);
+  return normalizeVelocity({ x: 0.0, y: 1.0 }, 10);
 }
 
 function generateRandomCoordinate(width: number, height: number): Coordinate {

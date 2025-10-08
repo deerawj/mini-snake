@@ -15,37 +15,49 @@ export class MiniSnakes {
 
     this.logic = new OfflineLogic(window.innerWidth, window.innerHeight);
 
-    this.head = new Graphics().rect(0, 0, 5, 5).fill("red");
+    this.head = new Graphics().rect(0, 0, 10, 10).fill("red");
     this.snakes.addChild(this.head);
     this.interaction = new Interaction(this.logic.head, this.logic.setVelocity);
   }
 
   public async init() {
-    await this.app.init({ background: "#181616ff", resizeTo: window });
+    await this.app.init({
+      resizeTo: window,
+      antialias: false,
+      backgroundAlpha: 0.0,
+    });
 
     document.getElementById("pixi-container")!.appendChild(this.app.canvas);
 
+    let ticks = 0;
+
     this.app.ticker.add((time) => {
-      void time;
+      ticks += 1;
+
+      if (ticks % 2 !== 0) {
+        return;
+      }
+
       const alteredPieces = this.logic.update();
 
       this.head.position.x = alteredPieces.head.x;
       this.head.position.y = alteredPieces.head.y;
 
       this.snakes.removeChildren();
-      this.snakes.addChild(
-        new Graphics()
-          .rect(this.head.position.x, this.head.position.y, 5, 5)
-          .fill("red")
-      );
 
       this.logic.bodies.forEach((body) => {
         this.snakes.addChild(
-          new Graphics().rect(body.x, body.y, 5, 5).fill("blue")
+          new Graphics().circle(body.x, body.y, 6).fill("gray")
         );
       });
 
-      this.head = new Graphics().rect(0, 0, 5, 5).fill("red");
+      this.snakes.addChild(
+        new Graphics()
+          .circle(this.head.position.x, this.head.position.y, 6)
+          .fill("red")
+      );
+
+      this.head = new Graphics().circle(0, 0, 7).fill("red");
     });
   }
 
