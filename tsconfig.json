@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "jsx": "react-jsx",
+    "module": "es2022",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "outDir": "./dist",
+    "declaration": true,
+    "verbatimModuleSyntax": true,
+    "noUncheckedIndexedAccess": true
+
+    // Occasionally useful when nothing better to do
+    // It would be diabolical to always enable them
+    // "noUnusedLocals": true
+    // "noUnusedParameters": true
+  },
+  "include": ["src"]
+}

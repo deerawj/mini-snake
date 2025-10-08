@@ -1,0 +1,29 @@
+{
+  "name": "mini-snakes",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npm run dev",
+    "build": "npm run lint && tsc && vite build",
+    "lint": "eslint .",
+    "test": "vitest",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "jiti": "^2.6.1",
+    "pixi.js": "^8.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "16.3.0",
+    "prettier": "^3.5.3",
+    "typescript": "~5.7.3",
+    "typescript-eslint": "^8.39.1",
+    "vite": "^6.2.0",
+    "vitest": "^3.2.4"
+  }
+}
