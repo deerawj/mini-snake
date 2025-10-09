@@ -27,7 +27,7 @@ export class MiniSnakes {
 
     this.app.ticker.add(this.onTick);
 
-    document.getElementById("pixi-container")!.appendChild(this.app.canvas);
+    document.body.appendChild(this.app.canvas);
   }
 
   public onTick = (ticker: Ticker) => {
