@@ -37,7 +37,7 @@ export class OfflineLogic {
     this.width = width;
     this.height = height;
 
-    this.length = 50;
+    this.length = 10;
 
     this.head = generateRandomCoordinate(this.width, this.height);
     this.normalfood = generateRandomCoordinate(this.width, this.height);
@@ -50,8 +50,45 @@ export class OfflineLogic {
   }
 
   public update = () => {
-    this.bodies.unshift({ x: this.head.x, y: this.head.y });
-    this.bodies.pop();
+    const currentX = Math.floor(this.bodies[0].x / GRID_SIZE) * GRID_SIZE;
+    const currentY = Math.floor(this.bodies[0].y / GRID_SIZE) * GRID_SIZE;
+    const newX = Math.floor(this.head.x / GRID_SIZE) * GRID_SIZE;
+    const newY = Math.floor(this.head.y / GRID_SIZE) * GRID_SIZE;
+
+    // diagonal
+    if (currentX !== newX && currentY !== newY) {
+      if (newX > currentX && newY > currentY) {
+        // moving bottom-right
+        this.bodies.unshift(
+          { x: this.head.x, y: this.head.y },
+          { x: this.head.x, y: this.bodies[0].y }
+        );
+      } else if (newX < currentX && newY > currentY) {
+        // moving bottom-left
+        this.bodies.unshift(
+          { x: this.head.x, y: this.head.y },
+          { x: this.head.x, y: this.bodies[0].y }
+        );
+      } else if (newX > currentX && newY < currentY) {
+        // moving top-right
+        this.bodies.unshift(
+          { x: this.head.x, y: this.head.y },
+          { x: this.head.x, y: this.bodies[0].y }
+        );
+      } else if (newX < currentX && newY < currentY) {
+        // moving top-left
+        this.bodies.unshift(
+          { x: this.head.x, y: this.head.y },
+          { x: this.head.x, y: this.bodies[0].y }
+        );
+      }
+
+      this.bodies.pop();
+      this.bodies.pop();
+    } else {
+      this.bodies.unshift({ x: this.head.x, y: this.head.y });
+      this.bodies.pop();
+    }
 
     this.head.x += this.velocity.x;
     this.head.y += this.velocity.y;

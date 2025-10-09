@@ -17,8 +17,8 @@ export class Renderer {
   }
 
   public set = (head: Coordinate, bodies: Array<Coordinate>) => {
-    this.head.position.x = Math.ceil(head.x / GRID_SIZE) * GRID_SIZE;
-    this.head.position.y = Math.ceil(head.y / GRID_SIZE) * GRID_SIZE;
+    this.head.position.x = Math.floor(head.x / GRID_SIZE) * GRID_SIZE;
+    this.head.position.y = Math.floor(head.y / GRID_SIZE) * GRID_SIZE;
 
     const difference = this.bodies.children.length - bodies.length;
 
@@ -45,8 +45,8 @@ export class Renderer {
     this.bodies.children.forEach((body, i) => {
       const newBody = bodies[i];
 
-      body.position.x = Math.ceil(newBody.x / GRID_SIZE) * GRID_SIZE;
-      body.position.y = Math.ceil(newBody.y / GRID_SIZE) * GRID_SIZE;
+      body.position.x = Math.floor(newBody.x / GRID_SIZE) * GRID_SIZE;
+      body.position.y = Math.floor(newBody.y / GRID_SIZE) * GRID_SIZE;
     });
   };
 }
