@@ -1,3 +1,5 @@
+export const GRID_SIZE = 10;
+
 export type Coordinate = {
   x: number;
   y: number;
@@ -69,12 +71,12 @@ export class OfflineLogic {
 
   /// TODO: add the ability to premove / setVelocity queue
   public setVelocity = (velocity: Velocity) => {
-    this.velocity = normalizeVelocity(velocity, 10);
+    this.velocity = normalizeVelocity(velocity, GRID_SIZE);
   };
 }
 
 function generateRandomVelocity(): Velocity {
-  return normalizeVelocity({ x: 0.0, y: 1.0 }, 10);
+  return normalizeVelocity({ x: 0.0, y: 1.0 }, GRID_SIZE);
 }
 
 function generateRandomCoordinate(width: number, height: number): Coordinate {

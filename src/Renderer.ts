@@ -1,8 +1,14 @@
 import { Application, Container, Graphics } from "pixi.js";
-import type { Coordinate } from "./OfflineLogic";
+import { GRID_SIZE, type Coordinate } from "./OfflineLogic";
 
 export class Renderer {
-  private head: Graphics = new Graphics().circle(0, 0, 6).fill("red");
+  private head: Graphics = new Graphics()
+    .rect(0, 0, 10, 10)
+    .fill("rgb(255, 81, 0)")
+    .stroke({
+      width: 2,
+      color: "gray",
+    });
   private bodies: Container = new Container();
 
   constructor(app: Application) {
@@ -11,8 +17,8 @@ export class Renderer {
   }
 
   public set = (head: Coordinate, bodies: Array<Coordinate>) => {
-    this.head.position.x = head.x;
-    this.head.position.y = head.y;
+    this.head.position.x = Math.ceil(head.x / GRID_SIZE) * GRID_SIZE;
+    this.head.position.y = Math.ceil(head.y / GRID_SIZE) * GRID_SIZE;
 
     const difference = this.bodies.children.length - bodies.length;
 
@@ -22,19 +28,25 @@ export class Renderer {
       }
     } else if (difference < 0) {
       for (let i = difference; i < 0; i++) {
-        this.bodies.addChild(new Graphics().circle(0, 0, 6).fill("gray"));
+        const bodyGraphicContainer = new Container();
+        const bodyGraphic = new Graphics().rect(0, 0, 10, 10).fill("gray");
+        bodyGraphic.alpha = 0.7;
+        bodyGraphic.stroke({
+          width: 2,
+          color: "gray",
+        });
+
+        bodyGraphicContainer.addChild(bodyGraphic);
+
+        this.bodies.addChild(bodyGraphicContainer);
       }
     }
 
     this.bodies.children.forEach((body, i) => {
       const newBody = bodies[i];
 
-      body.position.x = newBody.x;
-      body.position.y = newBody.y;
+      body.position.x = Math.ceil(newBody.x / GRID_SIZE) * GRID_SIZE;
+      body.position.y = Math.ceil(newBody.y / GRID_SIZE) * GRID_SIZE;
     });
   };
-
-  //
-  //
-  //
 }
