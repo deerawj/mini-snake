@@ -1,72 +1,51 @@
-import { Application, Graphics, Container } from "pixi.js";
 import { OfflineLogic } from "./OfflineLogic";
 import { Interaction } from "./Interaction";
+import { Application, Ticker } from "pixi.js";
+import { Renderer } from "./Renderer";
 
 export class MiniSnakes {
-  private app: Application;
-  private logic: OfflineLogic;
-  private snakes: Container = new Container();
+  private app: Application = new Application();
+
+  private logic: OfflineLogic = new OfflineLogic(
+    window.innerWidth,
+    window.innerHeight
+  );
   private interaction: Interaction;
-  private head: Graphics;
+  private renderer: Renderer = new Renderer(this.app);
+  private timeSinceLastUpdate = 0;
 
   constructor() {
-    this.app = new Application();
-    this.app.stage.addChild(this.snakes);
-
-    this.logic = new OfflineLogic(window.innerWidth, window.innerHeight);
-
-    this.head = new Graphics().rect(0, 0, 10, 10).fill("red");
-    this.snakes.addChild(this.head);
     this.interaction = new Interaction(this.logic.head, this.logic.setVelocity);
   }
 
-  public async init() {
+  async init() {
     await this.app.init({
       resizeTo: window,
       antialias: false,
       backgroundAlpha: 0.0,
     });
 
+    this.app.ticker.add(this.onTick);
+
     document.getElementById("pixi-container")!.appendChild(this.app.canvas);
-
-    let timeSinceLastUpdate = 0;
-
-    this.app.ticker.add((time) => {
-      timeSinceLastUpdate += time.deltaMS;
-
-      if (timeSinceLastUpdate < 25) {
-        return;
-      }
-
-      timeSinceLastUpdate = 0;
-
-      const alteredPieces = this.logic.update();
-
-      this.head.position.x = alteredPieces.head.x;
-      this.head.position.y = alteredPieces.head.y;
-
-      this.snakes.removeChildren();
-
-      this.logic.bodies.forEach((body) => {
-        this.snakes.addChild(
-          new Graphics().circle(body.x, body.y, 6).fill("gray")
-        );
-      });
-
-      this.snakes.addChild(
-        new Graphics()
-          .circle(this.head.position.x, this.head.position.y, 6)
-          .fill("red")
-      );
-
-      this.head = new Graphics().circle(0, 0, 7).fill("red");
-    });
   }
 
-  // Receives all snakes and bodies from the server
-  // private onSnakesFull(snakes: Array<Snake>) {
-  //   //
-  // }
+  public onTick = (ticker: Ticker) => {
+    this.timeSinceLastUpdate += ticker.deltaMS;
+
+    if (this.timeSinceLastUpdate < 25) {
+      return;
+    }
+
+    this.timeSinceLastUpdate = 0;
+
+    this.logic.update();
+
+    this.renderer.set(this.logic.head, this.logic.bodies);
+
+    // this.head.position.x = alteredPieces.head.x;
+    // this.head.position.y = alteredPieces.head.y;
+  };
 }
 
 (async () => {

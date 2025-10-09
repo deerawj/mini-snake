@@ -47,7 +47,7 @@ export class OfflineLogic {
     }));
   }
 
-  public update(): AlteredPieces {
+  public update = () => {
     this.bodies.unshift({ x: this.head.x, y: this.head.y });
     this.bodies.pop();
 
@@ -65,16 +65,7 @@ export class OfflineLogic {
     } else if (this.head.y > this.height) {
       this.head.y = 0;
     }
-
-    return {
-      head: {
-        x: this.head.x,
-        y: this.head.y,
-      },
-      bodyAdded: [],
-      bodyRemoved: [],
-    };
-  }
+  };
 
   /// TODO: add the ability to premove / setVelocity queue
   public setVelocity = (velocity: Velocity) => {
