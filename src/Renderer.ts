@@ -30,7 +30,7 @@ export class Renderer {
       for (let i = difference; i < 0; i++) {
         const bodyGraphicContainer = new Container();
         const bodyGraphic = new Graphics().rect(0, 0, 10, 10).fill("gray");
-        bodyGraphic.alpha = 0.7;
+        bodyGraphic.alpha = 0.5;
         bodyGraphic.stroke({
           width: 2,
           color: "gray",
