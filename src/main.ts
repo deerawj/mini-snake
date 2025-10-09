@@ -29,14 +29,16 @@ export class MiniSnakes {
 
     document.getElementById("pixi-container")!.appendChild(this.app.canvas);
 
-    let ticks = 0;
+    let timeSinceLastUpdate = 0;
 
     this.app.ticker.add((time) => {
-      ticks += 1;
+      timeSinceLastUpdate += time.deltaMS;
 
-      if (ticks % 2 !== 0) {
+      if (timeSinceLastUpdate < 25) {
         return;
       }
+
+      timeSinceLastUpdate = 0;
 
       const alteredPieces = this.logic.update();
 
