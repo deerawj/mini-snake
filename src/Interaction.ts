@@ -41,7 +41,6 @@ export class Interaction {
       magnitudeY <= 10 &&
       magnitudeY >= -10
     ) {
-      console.log(magnitudeX);
       this.onVelocityChange({ x: 0, y: 0 });
       return;
     }

@@ -54,6 +54,18 @@ export class OfflineLogic {
     this.head.x += this.velocity.x;
     this.head.y += this.velocity.y;
 
+    if (this.head.x < 0) {
+      this.head.x = this.width;
+    } else if (this.head.x > this.width) {
+      this.head.x = 0;
+    }
+
+    if (this.head.y < 0) {
+      this.head.y = this.height;
+    } else if (this.head.y > this.height) {
+      this.head.y = 0;
+    }
+
     return {
       head: {
         x: this.head.x,
