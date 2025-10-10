@@ -76,6 +76,7 @@ export class Renderer {
     return pixel;
   }
 
+  // actual pixel (343) -> game pixel (340)
   private convertPixelToGameCoordinate(pixel: number): number {
     return Math.floor(pixel / GRID_SIZE) * GRID_SIZE;
   }

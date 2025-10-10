@@ -18,6 +18,7 @@ export type AlteredPieces = {
 
 type Spin = {
   angle: number;
+  angleAmount: number;
   x: number;
   y: number;
 };
@@ -56,7 +57,6 @@ export class OfflineLogic {
       y: this.head.y,
     }));
 
-    //todo: remove
     this.invokeSpin(0, 0);
   }
 
@@ -102,7 +102,7 @@ export class OfflineLogic {
     }
 
     if (this.spin !== undefined) {
-      this.spin.angle += 0.05;
+      this.spin.angle += this.spin.angleAmount;
       this.velocity.x = Math.cos(this.spin.angle);
       this.velocity.y = Math.sin(this.spin.angle);
       this.velocity = normalizeVelocity(this.velocity, GRID_SIZE);
@@ -127,8 +127,14 @@ export class OfflineLogic {
   public invokeSpin = (x: number, y: number) => {
     const angle = Math.atan2(this.velocity.y, this.velocity.x);
 
+    let angleAmount = -0.05;
+    if (Math.random() < 0.5) {
+      angleAmount = 0.05;
+    }
+
     this.spin = {
       angle,
+      angleAmount,
       x,
       y,
     };
