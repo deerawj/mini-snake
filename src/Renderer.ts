@@ -1,24 +1,31 @@
-import { Application, Container, Graphics } from "pixi.js";
+import { Application, Container, Graphics, type FillInput } from "pixi.js";
 import { GRID_SIZE, type Coordinate } from "./OfflineLogic";
 
 export class Renderer {
-  private head: Graphics = new Graphics()
-    .rect(0, 0, 10, 10)
-    .fill("rgb(255, 81, 0)")
-    .stroke({
-      width: 2,
-      color: "gray",
-    });
+  private head: Graphics = this.newPixel("rgb(255, 81, 0)");
   private bodies: Container = new Container();
+
+  private normalfood = this.newPixel("rgb(0, 156, 52)");
+  private specialFood = this.newPixel("rgb(107, 0, 168)");
+  private poisonFood = this.newPixel("rgba(155, 10, 0, 1)");
 
   constructor(app: Application) {
     app.stage.addChild(this.bodies);
     app.stage.addChild(this.head);
+    app.stage.addChild(this.normalfood);
+    app.stage.addChild(this.specialFood);
+    app.stage.addChild(this.poisonFood);
   }
 
-  public set = (head: Coordinate, bodies: Array<Coordinate>) => {
-    this.head.position.x = Math.floor(head.x / GRID_SIZE) * GRID_SIZE;
-    this.head.position.y = Math.floor(head.y / GRID_SIZE) * GRID_SIZE;
+  public set = (
+    head: Coordinate,
+    bodies: Array<Coordinate>,
+    normalfood: Coordinate,
+    specialFood: Coordinate,
+    poisonFood: Coordinate
+  ) => {
+    this.head.position.x = this.convertPixelToGameCoordinate(head.x);
+    this.head.position.y = this.convertPixelToGameCoordinate(head.y);
 
     const difference = this.bodies.children.length - bodies.length;
 
@@ -29,13 +36,7 @@ export class Renderer {
     } else if (difference < 0) {
       for (let i = difference; i < 0; i++) {
         const bodyGraphicContainer = new Container();
-        const bodyGraphic = new Graphics().rect(0, 0, 10, 10).fill("gray");
-        bodyGraphic.alpha = 0.5;
-        bodyGraphic.stroke({
-          width: 2,
-          color: "gray",
-        });
-
+        const bodyGraphic = this.newPixel("gray");
         bodyGraphicContainer.addChild(bodyGraphic);
 
         this.bodies.addChild(bodyGraphicContainer);
@@ -45,8 +46,37 @@ export class Renderer {
     this.bodies.children.forEach((body, i) => {
       const newBody = bodies[i];
 
-      body.position.x = Math.floor(newBody.x / GRID_SIZE) * GRID_SIZE;
-      body.position.y = Math.floor(newBody.y / GRID_SIZE) * GRID_SIZE;
+      body.position.x = this.convertPixelToGameCoordinate(newBody.x);
+      body.position.y = this.convertPixelToGameCoordinate(newBody.y);
     });
+
+    this.normalfood.position.set(
+      this.convertPixelToGameCoordinate(normalfood.x),
+      this.convertPixelToGameCoordinate(normalfood.y)
+    );
+    this.specialFood.position.set(
+      this.convertPixelToGameCoordinate(specialFood.x),
+      this.convertPixelToGameCoordinate(specialFood.y)
+    );
+    this.poisonFood.position.set(
+      this.convertPixelToGameCoordinate(poisonFood.x),
+      this.convertPixelToGameCoordinate(poisonFood.y)
+    );
   };
+
+  private newPixel(fill: FillInput) {
+    const pixel = new Graphics()
+      .rect(0, 0, GRID_SIZE, GRID_SIZE)
+      .fill(fill)
+      .stroke({
+        width: 2,
+        color: "gray",
+      });
+    pixel.alpha = 0.2;
+    return pixel;
+  }
+
+  private convertPixelToGameCoordinate(pixel: number): number {
+    return Math.floor(pixel / GRID_SIZE) * GRID_SIZE;
+  }
 }

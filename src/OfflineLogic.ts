@@ -1,4 +1,4 @@
-export const GRID_SIZE = 10;
+export const GRID_SIZE = 20;
 
 export type Coordinate = {
   x: number;
@@ -102,7 +102,7 @@ export class OfflineLogic {
     }
 
     if (this.spin !== undefined) {
-      this.spin.angle += 0.2;
+      this.spin.angle += 0.05;
       this.velocity.x = Math.cos(this.spin.angle);
       this.velocity.y = Math.sin(this.spin.angle);
       this.velocity = normalizeVelocity(this.velocity, GRID_SIZE);

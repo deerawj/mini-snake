@@ -41,7 +41,7 @@ export class MiniSnakes {
   public onTick = (ticker: Ticker) => {
     this.timeSinceLastUpdate += ticker.deltaMS;
 
-    if (this.timeSinceLastUpdate < 25) {
+    if (this.timeSinceLastUpdate < 40) {
       return;
     }
 
@@ -49,7 +49,13 @@ export class MiniSnakes {
 
     this.logic.update();
 
-    this.renderer.set(this.logic.head, this.logic.bodies);
+    this.renderer.set(
+      this.logic.head,
+      this.logic.bodies,
+      this.logic.normalfood,
+      this.logic.specialFood,
+      this.logic.poisonFood
+    );
 
     const element = document.elementFromPoint(
       this.logic.head.x,
