@@ -125,8 +125,10 @@ export class OfflineLogic {
   };
 
   public invokeSpin = (x: number, y: number) => {
+    const angle = Math.atan2(this.velocity.y, this.velocity.x);
+
     this.spin = {
-      angle: 0,
+      angle,
       x,
       y,
     };
@@ -138,8 +140,32 @@ export class OfflineLogic {
       return;
     }
 
+    const normalizedVelocity = normalizeVelocity(velocity, GRID_SIZE);
+
+    // const currentAngle = Math.atan2(this.velocity.y, this.velocity.x);
+    // const proposedAngle = Math.atan2(
+    //   normalizedVelocity.y,
+    //   normalizedVelocity.x
+    // );
+
+    // let angleDifference = Math.abs(currentAngle - proposedAngle);
+    // angleDifference =
+    //   angleDifference > Math.PI
+    //     ? 2 * Math.PI - angleDifference
+    //     : angleDifference;
+
+    // // Threshold check
+    // const THRESHOLD = Math.PI / 4; // 45 degrees in radians
+
+    // console.log(Math.abs(angleDifference - THRESHOLD));
+    // if (Math.abs(angleDifference - THRESHOLD) > 2) {
+    //   console.log("ret");
+    //   return;
+    // }
+
+    this.velocity = normalizedVelocity;
+
     this.spin = undefined;
-    this.velocity = normalizeVelocity(velocity, GRID_SIZE);
   };
 }
 

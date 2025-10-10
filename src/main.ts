@@ -64,8 +64,10 @@ export class MiniSnakes {
 
       element.focus();
     }
-    // this.head.position.x = alteredPieces.head.x;
-    // this.head.position.y = alteredPieces.head.y;
+
+    if (this.interaction.shouldInvokeCirculation()) {
+      this.logic.invokeSpin(0, 0);
+    }
   };
 }
 
