@@ -42,7 +42,7 @@ export class MiniSnakes {
   public onTick = (ticker: Ticker) => {
     this.timeSinceLastUpdate += ticker.deltaMS;
 
-    if (this.timeSinceLastUpdate < 40) {
+    if (this.timeSinceLastUpdate < 100) {
       return;
     }
 
