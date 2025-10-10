@@ -32,6 +32,7 @@ export class MiniSnakes {
     this.app.ticker.add(this.onTick);
 
     document.body.appendChild(this.app.canvas);
+    this.update();
   }
 
   public onFetch = () => {
@@ -46,7 +47,10 @@ export class MiniSnakes {
     }
 
     this.timeSinceLastUpdate = 0;
+    this.update();
+  };
 
+  public update = () => {
     this.logic.update();
 
     this.renderer.set(
