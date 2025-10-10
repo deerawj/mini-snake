@@ -15,7 +15,11 @@ export class MiniSnakes {
   private timeSinceLastUpdate = 0;
 
   constructor() {
-    this.interaction = new Interaction(this.logic.head, this.logic.setVelocity);
+    this.interaction = new Interaction(
+      this.logic.head,
+      this.logic.setVelocity,
+      this.onFetch
+    );
   }
 
   async init() {
@@ -30,6 +34,10 @@ export class MiniSnakes {
     document.body.appendChild(this.app.canvas);
   }
 
+  public onFetch = () => {
+    //
+  };
+
   public onTick = (ticker: Ticker) => {
     this.timeSinceLastUpdate += ticker.deltaMS;
 
@@ -43,6 +51,19 @@ export class MiniSnakes {
 
     this.renderer.set(this.logic.head, this.logic.bodies);
 
+    const element = document.elementFromPoint(
+      this.logic.head.x,
+      this.logic.head.y
+    ) as HTMLElement | null;
+
+    if (element?.tagName === "A") {
+      // Optionally make it focusable if it's not
+      if (!element.hasAttribute("tabindex")) {
+        element.setAttribute("tabindex", "-1");
+      }
+
+      element.focus();
+    }
     // this.head.position.x = alteredPieces.head.x;
     // this.head.position.y = alteredPieces.head.y;
   };

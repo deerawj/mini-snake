@@ -34,6 +34,12 @@ a:hover {
   text-decoration: none;
 }
 
+a:focus {
+  outline: 2px solid rgb(255, 81, 0);
+  outline: 5px auto -webkit-focus-ring-color;
+  font-weight: bold;
+}
+
 .platform-links {
   list-style: none;
   padding: 0;

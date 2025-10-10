@@ -3,13 +3,16 @@ import type { SnakeBody, Velocity } from "./OfflineLogic";
 export class Interaction {
   snakeHead: SnakeBody;
   onVelocityChange: (velocity: Velocity) => unknown;
+  onFetch: () => unknown;
 
   constructor(
     snakeHead: SnakeBody,
-    onVelocityChange: (velocity: Velocity) => unknown
+    onVelocityChange: (velocity: Velocity) => unknown,
+    onFetch: () => unknown
   ) {
     this.snakeHead = snakeHead;
     this.onVelocityChange = onVelocityChange;
+    this.onFetch = onFetch;
 
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("pointermove", this.onPointerMove);
@@ -23,11 +26,11 @@ export class Interaction {
   private onKeyDown = (keydown: KeyboardEvent) => {
     if (keydown.key == "w") {
       this.onVelocityChange({ x: 0.0, y: -1.0 });
-    } else if (keydown.key == "a") {
+    } else if (keydown.key === "a") {
       this.onVelocityChange({ x: -1.0, y: 0.0 });
-    } else if (keydown.key == "s") {
+    } else if (keydown.key === "s") {
       this.onVelocityChange({ x: 0.0, y: 1.0 });
-    } else if (keydown.key == "d") {
+    } else if (keydown.key === "d") {
       this.onVelocityChange({ x: 1.0, y: 0.0 });
     }
   };
