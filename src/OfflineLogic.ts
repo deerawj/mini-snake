@@ -134,6 +134,10 @@ export class OfflineLogic {
 
   /// TODO: add the ability to premove / setVelocity queue
   public setVelocity = (velocity: Velocity) => {
+    if (velocity.x === 0 && velocity.y === 0) {
+      return;
+    }
+
     this.spin = undefined;
     this.velocity = normalizeVelocity(velocity, GRID_SIZE);
   };
