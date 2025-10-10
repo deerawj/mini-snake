@@ -16,6 +16,12 @@ export type AlteredPieces = {
   bodyRemoved: Array<Coordinate>;
 };
 
+type Spin = {
+  angle: number;
+  x: number;
+  y: number;
+};
+
 /// Pixel Coordinates
 /// Game Coordinates: floor(the pixel coordinate / 5).
 
@@ -33,6 +39,8 @@ export class OfflineLogic {
   width: number;
   height: number;
 
+  spin: Spin | undefined;
+
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
@@ -47,6 +55,9 @@ export class OfflineLogic {
       x: this.head.x,
       y: this.head.y,
     }));
+
+    //todo: remove
+    this.invokeSpin(0, 0);
   }
 
   public update = () => {
@@ -90,6 +101,13 @@ export class OfflineLogic {
       this.bodies.pop();
     }
 
+    if (this.spin !== undefined) {
+      this.spin.angle += 0.2;
+      this.velocity.x = Math.cos(this.spin.angle);
+      this.velocity.y = Math.sin(this.spin.angle);
+      this.velocity = normalizeVelocity(this.velocity, GRID_SIZE);
+    }
+
     this.head.x += this.velocity.x;
     this.head.y += this.velocity.y;
 
@@ -106,8 +124,17 @@ export class OfflineLogic {
     }
   };
 
+  public invokeSpin = (x: number, y: number) => {
+    this.spin = {
+      angle: 0,
+      x,
+      y,
+    };
+  };
+
   /// TODO: add the ability to premove / setVelocity queue
   public setVelocity = (velocity: Velocity) => {
+    this.spin = undefined;
     this.velocity = normalizeVelocity(velocity, GRID_SIZE);
   };
 }
