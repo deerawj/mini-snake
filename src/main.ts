@@ -18,7 +18,7 @@ export class MiniSnakes {
     this.interaction = new Interaction(
       this.logic.head,
       this.logic.setVelocity,
-      this.onFetch
+      this.logic.setTarget
     );
   }
 
@@ -73,10 +73,6 @@ export class MiniSnakes {
       }
 
       element.focus();
-    }
-
-    if (this.interaction.shouldInvokeCirculation()) {
-      this.logic.invokeSpin(0, 0);
     }
   };
 }

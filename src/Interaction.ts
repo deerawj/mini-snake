@@ -1,27 +1,19 @@
 import type { Coordinate, SnakeBody, Velocity } from "./OfflineLogic";
 
-export enum Inputs {
-  Unknown,
-  Keys,
-  Pointer,
-}
-
 export class Interaction {
   snakeHead: SnakeBody;
   onVelocityChange: (velocity: Velocity) => unknown;
-  onFetch: () => unknown;
+  onTargetChange: (target: Coordinate) => unknown;
   keysPressed: Set<string> = new Set<string>();
-  primaryInput: Inputs = Inputs.Unknown;
-  lastPointerMovement: Coordinate = { x: 0, y: 0 };
 
   constructor(
     snakeHead: SnakeBody,
     onVelocityChange: (velocity: Velocity) => unknown,
-    onFetch: () => unknown
+    onTargetChange: (target: Coordinate) => unknown
   ) {
     this.snakeHead = snakeHead;
     this.onVelocityChange = onVelocityChange;
-    this.onFetch = onFetch;
+    this.onTargetChange = onTargetChange;
 
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("keyup", this.onKeyUp);
@@ -40,19 +32,12 @@ export class Interaction {
   };
 
   private onKeyDown = (keydown: KeyboardEvent) => {
-    this.primaryInput = Inputs.Keys;
     this.keysPressed.add(keydown.key);
     this.updateVelocityBasedOnKeyDown();
   };
 
   private onPointerMove = (pointerEvent: PointerEvent) => {
-    this.primaryInput = Inputs.Pointer;
-    this.lastPointerMovement = { x: pointerEvent.x, y: pointerEvent.y };
-
-    const magnitudeX = pointerEvent.clientX - this.snakeHead.x;
-    const magnitudeY = pointerEvent.clientY - this.snakeHead.y;
-
-    this.onVelocityChange({ x: magnitudeX, y: magnitudeY });
+    this.onTargetChange({ x: pointerEvent.x, y: pointerEvent.y });
   };
 
   private updateVelocityBasedOnKeyDown = () => {
@@ -94,22 +79,22 @@ export class Interaction {
     this.onVelocityChange({ x, y });
   };
 
-  public shouldInvokeCirculation = (): boolean => {
-    if (this.primaryInput !== Inputs.Pointer) {
-      return false;
-    }
+  // public shouldInvokeCirculation = (): boolean => {
+  //   if (this.primaryInput !== Inputs.Pointer) {
+  //     return false;
+  //   }
 
-    const magnitudeX = this.lastPointerMovement.x - this.snakeHead.x;
-    const magnitudeY = this.lastPointerMovement.y - this.snakeHead.y;
-    if (
-      magnitudeX <= 10 &&
-      magnitudeX >= -10 &&
-      magnitudeY <= 10 &&
-      magnitudeY >= -10
-    ) {
-      return true;
-    }
+  //   const magnitudeX = this.lastPointerMovement.x - this.snakeHead.x;
+  //   const magnitudeY = this.lastPointerMovement.y - this.snakeHead.y;
+  //   if (
+  //     magnitudeX <= 10 &&
+  //     magnitudeX >= -10 &&
+  //     magnitudeY <= 10 &&
+  //     magnitudeY >= -10
+  //   ) {
+  //     return true;
+  //   }
 
-    return false;
-  };
+  //   return false;
+  // };
 }

@@ -16,6 +16,13 @@ export type AlteredPieces = {
   bodyRemoved: Array<Coordinate>;
 };
 
+enum Direction {
+  Up,
+  Left,
+  Down,
+  Right,
+}
+
 type Spin = {
   angle: number;
   angleAmount: number;
@@ -23,10 +30,6 @@ type Spin = {
   y: number;
 };
 
-/// Pixel Coordinates
-/// Game Coordinates: floor(the pixel coordinate / 5).
-
-// snake will only show resolution of blocks of 5 to give the traditional snake look. BUT will have a higher accuracy to account for going diagonally (and between).
 export class OfflineLogic {
   head: SnakeBody;
   bodies: Array<SnakeBody>;
@@ -35,12 +38,17 @@ export class OfflineLogic {
   poisonFood: Food;
   length: number;
 
-  velocity: Velocity = generateRandomVelocity();
+  velocity: Velocity | undefined = generateRandomVelocity();
+  target: Coordinate | undefined;
+
+  currentDirection: Direction = Direction.Right;
 
   width: number;
   height: number;
 
   spin: Spin | undefined;
+
+  updatesSinceLastTurn: number = 0;
 
   constructor(width: number, height: number) {
     this.width = width;
@@ -60,56 +68,84 @@ export class OfflineLogic {
     this.invokeSpin(0, 0);
   }
 
-  public update = () => {
-    const currentX = Math.floor(this.bodies[0].x / GRID_SIZE) * GRID_SIZE;
-    const currentY = Math.floor(this.bodies[0].y / GRID_SIZE) * GRID_SIZE;
-    const newX = Math.floor(this.head.x / GRID_SIZE) * GRID_SIZE;
-    const newY = Math.floor(this.head.y / GRID_SIZE) * GRID_SIZE;
+  private setDirection = (newDirection: Direction) => {
+    if (
+      newDirection === Direction.Up &&
+      this.currentDirection !== Direction.Down
+    ) {
+      this.currentDirection = Direction.Up;
+    } else if (
+      newDirection === Direction.Down &&
+      this.currentDirection !== Direction.Up
+    ) {
+      this.currentDirection = Direction.Down;
+    } else if (
+      newDirection === Direction.Left &&
+      this.currentDirection !== Direction.Right
+    ) {
+      this.currentDirection = Direction.Left;
+    } else if (
+      newDirection === Direction.Right &&
+      this.currentDirection !== Direction.Left
+    ) {
+      this.currentDirection = Direction.Right;
+    }
+  };
 
-    // diagonal
-    if (currentX !== newX && currentY !== newY) {
-      if (newX > currentX && newY > currentY) {
-        // moving bottom-right
-        this.bodies.unshift(
-          { x: this.head.x, y: this.head.y },
-          { x: this.head.x, y: this.bodies[0].y }
-        );
-      } else if (newX < currentX && newY > currentY) {
-        // moving bottom-left
-        this.bodies.unshift(
-          { x: this.head.x, y: this.head.y },
-          { x: this.head.x, y: this.bodies[0].y }
-        );
-      } else if (newX > currentX && newY < currentY) {
-        // moving top-right
-        this.bodies.unshift(
-          { x: this.head.x, y: this.head.y },
-          { x: this.head.x, y: this.bodies[0].y }
-        );
-      } else if (newX < currentX && newY < currentY) {
-        // moving top-left
-        this.bodies.unshift(
-          { x: this.head.x, y: this.head.y },
-          { x: this.head.x, y: this.bodies[0].y }
-        );
+  private setDirectionTowardsTarget = (target: Coordinate) => {
+    const distanceX = this.head.x - this.target.x;
+    const distanceY = this.head.y - this.target.y;
+    const distance = Math.hypot(distanceX, distanceY);
+
+    if (distance < 10) {
+      return;
+    }
+
+    const direction = Math.abs(distanceX) - Math.abs(distanceY);
+    if (direction > 20) {
+      if (this.head.x < target.x) {
+        this.setDirection(Direction.Right);
+      } else if (this.head.x > target.x) {
+        this.setDirection(Direction.Left);
       }
+    } else if (direction < -20) {
+      if (this.head.y > target.y) {
+        this.setDirection(Direction.Up);
+      } else if (this.head.y < target.y) {
+        this.setDirection(Direction.Down);
+      }
+    }
+  };
 
-      this.bodies.pop();
-      this.bodies.pop();
+  private setDirectionFromVelocity = (velocity: Velocity) => {
+    const { x, y } = velocity;
+
+    if (Math.abs(x) > Math.abs(y)) {
+      this.setDirection(x > 0 ? Direction.Right : Direction.Left);
     } else {
-      this.bodies.unshift({ x: this.head.x, y: this.head.y });
-      this.bodies.pop();
+      this.setDirection(y > 0 ? Direction.Down : Direction.Up);
+    }
+  };
+
+  public update = () => {
+    if (this.target !== undefined) {
+      this.setDirectionTowardsTarget(this.target);
+    } else if (this.velocity !== undefined) {
+      this.setDirectionFromVelocity(this.velocity);
     }
 
-    if (this.spin !== undefined) {
-      this.spin.angle += this.spin.angleAmount;
-      this.velocity.x = Math.cos(this.spin.angle);
-      this.velocity.y = Math.sin(this.spin.angle);
-      this.velocity = normalizeVelocity(this.velocity, GRID_SIZE);
+    if (this.currentDirection === Direction.Up) {
+      this.head.y -= GRID_SIZE;
+    } else if (this.currentDirection === Direction.Left) {
+      this.head.x -= GRID_SIZE;
+    } else if (this.currentDirection === Direction.Down) {
+      this.head.y += GRID_SIZE;
+    } else if (this.currentDirection === Direction.Right) {
+      this.head.x += GRID_SIZE;
     }
 
-    this.head.x += this.velocity.x;
-    this.head.y += this.velocity.y;
+    this.bodies.unshift({ x: this.head.x, y: this.head.y });
+    this.bodies.pop();
 
     if (this.head.x < 0) {
       this.head.x = this.width;
@@ -140,37 +176,20 @@ export class OfflineLogic {
     };
   };
 
+  public setTarget = (target: Coordinate) => {
+    this.velocity = undefined;
+    this.target = target;
+  };
+
   /// TODO: add the ability to premove / setVelocity queue
   public setVelocity = (velocity: Velocity) => {
     if (velocity.x === 0 && velocity.y === 0) {
       return;
     }
+    this.target = undefined;
 
     const normalizedVelocity = normalizeVelocity(velocity, GRID_SIZE);
-
-    // const currentAngle = Math.atan2(this.velocity.y, this.velocity.x);
-    // const proposedAngle = Math.atan2(
-    //   normalizedVelocity.y,
-    //   normalizedVelocity.x
-    // );
-
-    // let angleDifference = Math.abs(currentAngle - proposedAngle);
-    // angleDifference =
-    //   angleDifference > Math.PI
-    //     ? 2 * Math.PI - angleDifference
-    //     : angleDifference;
-
-    // // Threshold check
-    // const THRESHOLD = Math.PI / 4; // 45 degrees in radians
-
-    // console.log(Math.abs(angleDifference - THRESHOLD));
-    // if (Math.abs(angleDifference - THRESHOLD) > 2) {
-    //   console.log("ret");
-    //   return;
-    // }
-
     this.velocity = normalizedVelocity;
-
     this.spin = undefined;
   };
 }
