@@ -138,10 +138,7 @@ export class OfflineLogic {
     if (this.nextVelocity !== undefined) {
       this.lastInput = Input.Velocity;
       this.applyVelocity(this.nextVelocity);
-      this.nextVelocity = undefined;
-    } else if (this.nextNextVelocity !== undefined) {
-      this.lastInput = Input.Velocity;
-      this.applyVelocity(this.nextNextVelocity);
+      this.nextVelocity = this.nextNextVelocity;
       this.nextNextVelocity = undefined;
     }
 
@@ -234,18 +231,18 @@ function generateRandomVelocity(): Velocity {
 }
 
 function generateRandomCoordinate(width: number, height: number): Coordinate {
-  const convertPixelToGameCoordinate = (pixel: number) => {
+  const toGrid = (pixel: number) => {
     return Math.floor(pixel / GRID_SIZE) * GRID_SIZE;
   };
 
-  return {
-    x: convertPixelToGameCoordinate(generateRandomInt(width)),
-    y: convertPixelToGameCoordinate(generateRandomInt(height)),
+  const randInt = (max: number) => {
+    return Math.floor(Math.random() * max);
   };
-}
 
-function generateRandomInt(max) {
-  return Math.floor(Math.random() * max);
+  return {
+    x: toGrid(randInt(width)),
+    y: toGrid(randInt(height)),
+  };
 }
 
 export function normalizeVelocity(velocity: Velocity, constant: number) {
