@@ -2,7 +2,7 @@ import { Application, Container, Graphics, type FillInput } from "pixi.js";
 import { GRID_SIZE, type Coordinate } from "./OfflineLogic";
 
 export class Renderer {
-  private exactHead: Graphics = new Graphics().circle(0, 0, 4).fill("red");
+  // private exactHead: Graphics = new Graphics().circle(0, 0, 4).fill("red");
   private head: Graphics = this.newPixel("rgb(255, 81, 0)");
   private bodies: Container = new Container();
 
@@ -16,7 +16,7 @@ export class Renderer {
     app.stage.addChild(this.normalfood);
     app.stage.addChild(this.specialFood);
     app.stage.addChild(this.poisonFood);
-    app.stage.addChild(this.exactHead);
+    // app.stage.addChild(this.exactHead);
   }
 
   public set = (
@@ -56,7 +56,7 @@ export class Renderer {
     this.normalfood.position.set(normalfood.x, normalfood.y);
     this.specialFood.position.set(specialFood.x, specialFood.y);
     this.poisonFood.position.set(poisonFood.x, poisonFood.y);
-    this.exactHead.position.set(exactHead.x, exactHead.y);
+    // this.exactHead.position.set(exactHead.x, exactHead.y);
   };
   private newPixel(fill: FillInput) {
     const pixel = new Graphics()
