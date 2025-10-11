@@ -25,8 +25,10 @@ export class MiniSnakes {
   }
 
   private onResize = () => {
-    this.logic.width = document.documentElement.clientWidth;
-    this.logic.height = document.documentElement.clientHeight;
+    this.logic.setWidthAndHeight(
+      document.documentElement.clientWidth,
+      document.documentElement.clientHeight
+    );
   };
 
   async init() {

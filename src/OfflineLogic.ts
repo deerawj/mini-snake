@@ -54,8 +54,8 @@ export class OfflineLogic {
 
   currentDirection: Direction = Direction.Right;
 
-  width: number;
-  height: number;
+  private width: number;
+  private height: number;
 
   spin: Spin | undefined;
 
@@ -79,6 +79,15 @@ export class OfflineLogic {
 
     this.invokeSpin(0, 0);
   }
+
+  public setWidthAndHeight = (width: number, height: number) => {
+    this.width = width;
+    this.height = height;
+
+    this.normalfood = this.calculateNewFoodPosition(this.normalfood);
+    this.specialFood = this.calculateNewFoodPosition(this.specialFood);
+    this.poisonFood = this.calculateNewFoodPosition(this.poisonFood);
+  };
 
   private setDirection = (newDirection: Direction) => {
     const oppositeDirections = {
@@ -132,6 +141,19 @@ export class OfflineLogic {
 
       this.velocity = velocity;
     }
+  };
+
+  private calculateNewFoodPosition = (value: Coordinate): Coordinate => {
+    if (
+      value.x < 0 ||
+      value.x > this.width ||
+      value.y < 0 ||
+      value.y > this.height
+    ) {
+      return generateRandomCoordinate(this.width, this.height);
+    }
+
+    return value;
   };
 
   public update = () => {
