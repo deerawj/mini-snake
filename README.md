@@ -1,5 +1,7 @@
 # Mini Snake
 
+Welcome!
+
 To get started
 
 ```
