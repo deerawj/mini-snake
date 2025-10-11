@@ -234,9 +234,13 @@ function generateRandomVelocity(): Velocity {
 }
 
 function generateRandomCoordinate(width: number, height: number): Coordinate {
+  const convertPixelToGameCoordinate = (pixel: number) => {
+    return Math.floor(pixel / GRID_SIZE) * GRID_SIZE;
+  };
+
   return {
-    x: generateRandomInt(width),
-    y: generateRandomInt(height),
+    x: convertPixelToGameCoordinate(generateRandomInt(width)),
+    y: convertPixelToGameCoordinate(generateRandomInt(height)),
   };
 }
 
