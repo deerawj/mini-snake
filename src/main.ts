@@ -35,10 +35,6 @@ export class MiniSnakes {
     this.update();
   }
 
-  public onFetch = () => {
-    //
-  };
-
   public onTick = (ticker: Ticker) => {
     this.timeSinceLastUpdate += ticker.deltaMS;
 

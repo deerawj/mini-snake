@@ -46,6 +46,9 @@ export class OfflineLogic {
 
   lastInput: Input = Input.Velocity;
 
+  nextVelocity: Velocity | undefined;
+  nextNextVelocity: Velocity | undefined;
+
   velocity: Velocity | undefined = generateRandomVelocity();
   target: Coordinate | undefined;
 
@@ -90,9 +93,9 @@ export class OfflineLogic {
       newDirection !== oppositeDirections[this.currentDirection];
 
     if (isTurn) {
-      if (this.lastInput === Input.Target && this.updatesSinceLastTurn < 2) {
-        return;
-      }
+      // if (this.lastInput === Input.Target && this.updatesSinceLastTurn < 2) {
+      //   return;
+      // }
 
       this.currentDirection = newDirection;
       this.updatesSinceLastTurn = 0;
@@ -100,25 +103,54 @@ export class OfflineLogic {
   };
 
   private setDirectionFromVelocity = () => {
-    const x = this.exactHead.x - this.head.x;
-    const y = this.exactHead.y - this.head.y;
+    const vx = this.exactHead.x - this.head.x;
+    const vy = this.exactHead.y - this.head.y;
 
-    if (Math.abs(x) > Math.abs(y)) {
-      this.setDirection(x > 0 ? Direction.Right : Direction.Left);
+    if (vx === 0 && vy === 0) return;
+
+    const angle = Math.atan2(vy, vx);
+
+    if (angle >= -Math.PI / 4 && angle < Math.PI / 4) {
+      this.setDirection(Direction.Right);
+    } else if (angle >= Math.PI / 4 && angle < (3 * Math.PI) / 4) {
+      this.setDirection(Direction.Down);
+    } else if (angle >= -(3 * Math.PI) / 4 && angle < -Math.PI / 4) {
+      this.setDirection(Direction.Up);
     } else {
-      this.setDirection(y > 0 ? Direction.Down : Direction.Up);
+      this.setDirection(Direction.Left);
+    }
+  };
+
+  private applyVelocity = (velocity: Velocity) => {
+    if (
+      this.velocity === undefined ||
+      this.velocity.x !== velocity.x ||
+      this.velocity.y !== velocity.y
+    ) {
+      this.exactHead.x = this.head.x;
+      this.exactHead.y = this.head.y;
+
+      this.velocity = velocity;
     }
   };
 
   public update = () => {
-    if (this.lastInput === Input.Velocity) {
+    if (this.nextVelocity !== undefined) {
+      this.lastInput = Input.Velocity;
+      this.applyVelocity(this.nextVelocity);
+      this.nextVelocity = undefined;
+    } else if (this.nextNextVelocity !== undefined) {
+      this.lastInput = Input.Velocity;
+      this.applyVelocity(this.nextNextVelocity);
+      this.nextNextVelocity = undefined;
+    }
+
+    if (this.lastInput === Input.Velocity && this.velocity !== undefined) {
       this.exactHead.x += this.velocity.x;
       this.exactHead.y += this.velocity.y;
     }
 
-    if (this.velocity !== undefined) {
-      this.setDirectionFromVelocity();
-    }
+    this.setDirectionFromVelocity();
 
     if (this.currentDirection === Direction.Up) {
       this.head.y -= GRID_SIZE;
@@ -182,26 +214,17 @@ export class OfflineLogic {
     this.exactHead.y = target.y;
   };
 
-  /// TODO: add the ability to premove / setVelocity queue
   public setVelocity = (velocity: Velocity) => {
-    this.lastInput = Input.Velocity;
-
     if (velocity.x === 0 && velocity.y === 0) {
       return;
     }
 
     const normalizedVelocity = normalizeVelocity(velocity, GRID_SIZE);
 
-    if (
-      this.velocity === undefined ||
-      this.velocity.x !== normalizedVelocity.x ||
-      this.velocity.y !== normalizedVelocity.y
-    ) {
-      this.exactHead.x = this.head.x;
-      this.exactHead.y = this.head.y;
-
-      this.velocity = normalizedVelocity;
-      this.spin = undefined;
+    if (this.nextVelocity === undefined) {
+      this.nextVelocity = normalizedVelocity;
+    } else {
+      this.nextNextVelocity = normalizedVelocity;
     }
   };
 }
