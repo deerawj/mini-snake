@@ -89,7 +89,11 @@ export class OfflineLogic {
       newDirection !== this.currentDirection &&
       newDirection !== oppositeDirections[this.currentDirection];
 
-    if (isTurn && this.updatesSinceLastTurn > 1) {
+    if (isTurn) {
+      if (this.lastInput === Input.Target && this.updatesSinceLastTurn < 2) {
+        return;
+      }
+
       this.currentDirection = newDirection;
       this.updatesSinceLastTurn = 0;
     }
@@ -129,16 +133,27 @@ export class OfflineLogic {
     this.bodies.unshift({ x: this.head.x, y: this.head.y });
     this.bodies.pop();
 
+    let wrappedAround = false;
+
     if (this.head.x < 0) {
       this.head.x = this.width;
+      wrappedAround = true;
     } else if (this.head.x > this.width) {
       this.head.x = 0;
+      wrappedAround = true;
     }
 
     if (this.head.y < 0) {
       this.head.y = this.height;
+      wrappedAround = true;
     } else if (this.head.y > this.height) {
       this.head.y = 0;
+      wrappedAround = true;
+    }
+
+    if (wrappedAround) {
+      this.exactHead.x = this.head.x;
+      this.exactHead.y = this.head.y;
     }
 
     this.updatesSinceLastTurn += 1;
