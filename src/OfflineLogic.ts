@@ -93,9 +93,9 @@ export class OfflineLogic {
       newDirection !== oppositeDirections[this.currentDirection];
 
     if (isTurn) {
-      // if (this.lastInput === Input.Target && this.updatesSinceLastTurn < 2) {
-      //   return;
-      // }
+      if (this.lastInput === Input.Target && this.updatesSinceLastTurn < 2) {
+        return;
+      }
 
       this.currentDirection = newDirection;
       this.updatesSinceLastTurn = 0;
