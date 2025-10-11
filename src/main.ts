@@ -58,7 +58,8 @@ export class MiniSnakes {
       this.logic.bodies,
       this.logic.normalfood,
       this.logic.specialFood,
-      this.logic.poisonFood
+      this.logic.poisonFood,
+      this.logic.exactHead
     );
 
     const element = document.elementFromPoint(

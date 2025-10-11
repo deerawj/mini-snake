@@ -30,13 +30,21 @@ type Spin = {
   y: number;
 };
 
+enum Input {
+  Target,
+  Velocity,
+}
+
 export class OfflineLogic {
+  exactHead: Coordinate;
   head: SnakeBody;
   bodies: Array<SnakeBody>;
   normalfood: Food;
   specialFood: Food;
   poisonFood: Food;
   length: number;
+
+  lastInput: Input = Input.Velocity;
 
   velocity: Velocity | undefined = generateRandomVelocity();
   target: Coordinate | undefined;
@@ -57,6 +65,7 @@ export class OfflineLogic {
     this.length = 10;
 
     this.head = generateRandomCoordinate(this.width, this.height);
+    this.exactHead = { x: this.head.x, y: this.head.y };
     this.normalfood = generateRandomCoordinate(this.width, this.height);
     this.specialFood = generateRandomCoordinate(this.width, this.height);
     this.poisonFood = generateRandomCoordinate(this.width, this.height);
@@ -69,56 +78,26 @@ export class OfflineLogic {
   }
 
   private setDirection = (newDirection: Direction) => {
-    if (
-      newDirection === Direction.Up &&
-      this.currentDirection !== Direction.Down
-    ) {
-      this.currentDirection = Direction.Up;
-    } else if (
-      newDirection === Direction.Down &&
-      this.currentDirection !== Direction.Up
-    ) {
-      this.currentDirection = Direction.Down;
-    } else if (
-      newDirection === Direction.Left &&
-      this.currentDirection !== Direction.Right
-    ) {
-      this.currentDirection = Direction.Left;
-    } else if (
-      newDirection === Direction.Right &&
-      this.currentDirection !== Direction.Left
-    ) {
-      this.currentDirection = Direction.Right;
+    const oppositeDirections = {
+      [Direction.Up]: Direction.Down,
+      [Direction.Down]: Direction.Up,
+      [Direction.Left]: Direction.Right,
+      [Direction.Right]: Direction.Left,
+    };
+
+    const isTurn =
+      newDirection !== this.currentDirection &&
+      newDirection !== oppositeDirections[this.currentDirection];
+
+    if (isTurn && this.updatesSinceLastTurn > 1) {
+      this.currentDirection = newDirection;
+      this.updatesSinceLastTurn = 0;
     }
   };
 
-  private setDirectionTowardsTarget = (target: Coordinate) => {
-    const distanceX = this.head.x - this.target.x;
-    const distanceY = this.head.y - this.target.y;
-    const distance = Math.hypot(distanceX, distanceY);
-
-    if (distance < 10) {
-      return;
-    }
-
-    const direction = Math.abs(distanceX) - Math.abs(distanceY);
-    if (direction > 20) {
-      if (this.head.x < target.x) {
-        this.setDirection(Direction.Right);
-      } else if (this.head.x > target.x) {
-        this.setDirection(Direction.Left);
-      }
-    } else if (direction < -20) {
-      if (this.head.y > target.y) {
-        this.setDirection(Direction.Up);
-      } else if (this.head.y < target.y) {
-        this.setDirection(Direction.Down);
-      }
-    }
-  };
-
-  private setDirectionFromVelocity = (velocity: Velocity) => {
-    const { x, y } = velocity;
+  private setDirectionFromVelocity = () => {
+    const x = this.exactHead.x - this.head.x;
+    const y = this.exactHead.y - this.head.y;
 
     if (Math.abs(x) > Math.abs(y)) {
       this.setDirection(x > 0 ? Direction.Right : Direction.Left);
@@ -128,10 +107,13 @@ export class OfflineLogic {
   };
 
   public update = () => {
-    if (this.target !== undefined) {
-      this.setDirectionTowardsTarget(this.target);
-    } else if (this.velocity !== undefined) {
-      this.setDirectionFromVelocity(this.velocity);
+    if (this.lastInput === Input.Velocity) {
+      this.exactHead.x += this.velocity.x;
+      this.exactHead.y += this.velocity.y;
+    }
+
+    if (this.velocity !== undefined) {
+      this.setDirectionFromVelocity();
     }
 
     if (this.currentDirection === Direction.Up) {
@@ -158,6 +140,8 @@ export class OfflineLogic {
     } else if (this.head.y > this.height) {
       this.head.y = 0;
     }
+
+    this.updatesSinceLastTurn += 1;
   };
 
   public invokeSpin = (x: number, y: number) => {
@@ -177,20 +161,33 @@ export class OfflineLogic {
   };
 
   public setTarget = (target: Coordinate) => {
-    this.velocity = undefined;
-    this.target = target;
+    this.lastInput = Input.Target;
+
+    this.exactHead.x = target.x;
+    this.exactHead.y = target.y;
   };
 
   /// TODO: add the ability to premove / setVelocity queue
   public setVelocity = (velocity: Velocity) => {
+    this.lastInput = Input.Velocity;
+
     if (velocity.x === 0 && velocity.y === 0) {
       return;
     }
-    this.target = undefined;
 
     const normalizedVelocity = normalizeVelocity(velocity, GRID_SIZE);
-    this.velocity = normalizedVelocity;
-    this.spin = undefined;
+
+    if (
+      this.velocity === undefined ||
+      this.velocity.x !== normalizedVelocity.x ||
+      this.velocity.y !== normalizedVelocity.y
+    ) {
+      this.exactHead.x = this.head.x;
+      this.exactHead.y = this.head.y;
+
+      this.velocity = normalizedVelocity;
+      this.spin = undefined;
+    }
   };
 }
 
