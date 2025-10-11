@@ -7,8 +7,8 @@ export class MiniSnakes {
   private app: Application = new Application();
 
   private logic: OfflineLogic = new OfflineLogic(
-    window.innerWidth,
-    window.innerHeight
+    document.documentElement.clientWidth,
+    document.documentElement.clientHeight
   );
   private interaction: Interaction;
   private renderer: Renderer = new Renderer(this.app);
@@ -20,13 +20,22 @@ export class MiniSnakes {
       this.logic.setVelocity,
       this.logic.setTarget
     );
+
+    window.addEventListener("resize", this.onResize);
   }
+
+  private onResize = () => {
+    this.logic.width = document.documentElement.clientWidth;
+    this.logic.height = document.documentElement.clientHeight;
+  };
 
   async init() {
     await this.app.init({
-      resizeTo: window,
-      antialias: false,
       backgroundAlpha: 0.0,
+      resizeTo: document.documentElement,
+      autoDensity: true,
+      resolution: window.devicePixelRatio,
+      antialias: false,
     });
 
     this.app.ticker.add(this.onTick);
