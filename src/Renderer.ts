@@ -25,6 +25,7 @@ export class Renderer {
     normalfood: Coordinate,
     specialFood: Coordinate,
     poisonFood: Coordinate,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     exactHead: Coordinate
   ) => {
     this.head.position.x = head.x;
