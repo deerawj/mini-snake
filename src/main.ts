@@ -69,19 +69,20 @@ export class MiniSnakes {
       this.logic.exactHead
     );
 
-    const element = document.elementFromPoint(
-      this.logic.head.x,
-      this.logic.head.y
-    ) as HTMLElement | null;
+    // Disable
+    // const element = document.elementFromPoint(
+    //   this.logic.head.x,
+    //   this.logic.head.y
+    // ) as HTMLElement | null;
 
-    if (element?.tagName === "A") {
-      // Optionally make it focusable if it's not
-      if (!element.hasAttribute("tabindex")) {
-        element.setAttribute("tabindex", "-1");
-      }
+    // if (element?.tagName === "A") {
+    //   // Optionally make it focusable if it's not
+    //   if (!element.hasAttribute("tabindex")) {
+    //     element.setAttribute("tabindex", "-1");
+    //   }
 
-      element.focus();
-    }
+    //   element.focus();
+    // }
   };
 }
 
