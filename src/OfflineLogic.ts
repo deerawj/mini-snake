@@ -1,4 +1,5 @@
 export const GRID_SIZE = 20;
+export const STARTING_LENGTH = 10;
 
 export type Coordinate = {
   x: number;
@@ -35,6 +36,14 @@ enum Input {
   Velocity,
 }
 
+enum CollisionResult {
+  Nothing,
+  Self,
+  NormalFood,
+  SpecialFood,
+  PoisonFood,
+}
+
 export class OfflineLogic {
   exactHead: Coordinate;
   head: SnakeBody;
@@ -42,7 +51,6 @@ export class OfflineLogic {
   normalfood: Food;
   specialFood: Food;
   poisonFood: Food;
-  length: number;
 
   lastInput: Input = Input.Velocity;
 
@@ -65,14 +73,12 @@ export class OfflineLogic {
     this.width = width;
     this.height = height;
 
-    this.length = 10;
-
     this.head = generateRandomCoordinate(this.width, this.height);
     this.exactHead = { x: this.head.x, y: this.head.y };
     this.normalfood = generateRandomCoordinate(this.width, this.height);
     this.specialFood = generateRandomCoordinate(this.width, this.height);
     this.poisonFood = generateRandomCoordinate(this.width, this.height);
-    this.bodies = Array.from({ length: this.length }, () => ({
+    this.bodies = Array.from({ length: STARTING_LENGTH }, () => ({
       x: this.head.x,
       y: this.head.y,
     }));
@@ -207,7 +213,65 @@ export class OfflineLogic {
       this.exactHead.y = this.head.y;
     }
 
+    const collision = this.checkForCollision();
+    if (collision === CollisionResult.NormalFood) {
+      this.addLength(1);
+      this.normalfood = generateRandomCoordinate(this.width, this.height);
+    } else if (collision === CollisionResult.SpecialFood) {
+      this.addLength(4);
+      this.specialFood = generateRandomCoordinate(this.width, this.height);
+    } else if (collision === CollisionResult.PoisonFood) {
+      this.addLength(-6);
+      this.poisonFood = generateRandomCoordinate(this.width, this.height);
+    }
+
     this.updatesSinceLastTurn += 1;
+  };
+
+  private addLength = (amount: number) => {
+    if (amount > 0) {
+      const lastBody = this.bodies[this.bodies.length - 1]; // TODO: why this not give error about undefined? TODO: when it is undefined use head value instead.
+      for (let i = 0; i < amount; i++) {
+        this.bodies.push({ x: lastBody.x, y: lastBody.y });
+      }
+    } else if (amount < 0) {
+      for (let i = amount; i < 0; i++) {
+        this.bodies.pop();
+      }
+    }
+  };
+
+  public checkForCollision = (): CollisionResult => {
+    if (
+      this.head.x === this.normalfood.x &&
+      this.head.y === this.normalfood.y
+    ) {
+      return CollisionResult.NormalFood;
+    }
+
+    if (
+      this.head.x === this.specialFood.x &&
+      this.head.y === this.specialFood.y
+    ) {
+      return CollisionResult.SpecialFood;
+    }
+
+    if (
+      this.head.x === this.poisonFood.x &&
+      this.head.y === this.poisonFood.y
+    ) {
+      return CollisionResult.PoisonFood;
+    }
+
+    if (
+      this.bodies.every(
+        (body) => !(body.x === this.head.x && body.x === this.head.x)
+      )
+    ) {
+      return CollisionResult.Self;
+    }
+
+    return CollisionResult.Nothing;
   };
 
   public invokeSpin = (x: number, y: number) => {
