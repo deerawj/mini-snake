@@ -187,7 +187,7 @@ export class OfflineLogic {
     let wrappedAround = false;
 
     if (this.head.x < 0) {
-      this.head.x = this.width;
+      this.head.x = floorToGrid(this.width);
       wrappedAround = true;
     } else if (this.head.x > this.width) {
       this.head.x = 0;
@@ -195,7 +195,7 @@ export class OfflineLogic {
     }
 
     if (this.head.y < 0) {
-      this.head.y = this.height;
+      this.head.y = floorToGrid(this.height);
       wrappedAround = true;
     } else if (this.head.y > this.height) {
       this.head.y = 0;
@@ -252,18 +252,18 @@ function generateRandomVelocity(): Velocity {
   return normalizeVelocity({ x: 0.0, y: 1.0 }, GRID_SIZE);
 }
 
-function generateRandomCoordinate(width: number, height: number): Coordinate {
-  const toGrid = (pixel: number) => {
-    return Math.floor(pixel / GRID_SIZE) * GRID_SIZE;
-  };
+function floorToGrid(pixel: number) {
+  return Math.floor(pixel / GRID_SIZE) * GRID_SIZE;
+}
 
+function generateRandomCoordinate(width: number, height: number): Coordinate {
   const randInt = (max: number) => {
     return Math.floor(Math.random() * max);
   };
 
   return {
-    x: toGrid(randInt(width)),
-    y: toGrid(randInt(height)),
+    x: floorToGrid(randInt(width)),
+    y: floorToGrid(randInt(height)),
   };
 }
 
