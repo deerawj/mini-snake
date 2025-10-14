@@ -92,3 +92,10 @@ header,
 main {
   position: relative;
 }
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #dfdfdf;
+    background: #121212;
+  }
+}
