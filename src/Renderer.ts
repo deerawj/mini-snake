@@ -49,6 +49,9 @@ export class Renderer {
 
     this.bodies.children.forEach((body, i) => {
       const newBody = bodies[i];
+      if (newBody === undefined) {
+        return;
+      }
 
       body.position.x = newBody.x;
       body.position.y = newBody.y;

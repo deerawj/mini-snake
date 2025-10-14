@@ -83,7 +83,7 @@ export class OfflineLogic {
       y: this.head.y,
     }));
 
-    this.invokeSpin(0, 0);
+    // this.invokeSpin(0, 0);
   }
 
   public setWidthAndHeight = (width: number, height: number) => {
@@ -230,9 +230,12 @@ export class OfflineLogic {
 
   private addLength = (amount: number) => {
     if (amount > 0) {
-      const lastBody = this.bodies[this.bodies.length - 1]; // TODO: why this not give error about undefined? TODO: when it is undefined use head value instead.
+      const lastBody = this.bodies[this.bodies.length - 1];
+      const x = lastBody !== undefined ? lastBody.x : this.head.x;
+      const y = lastBody !== undefined ? lastBody.y : this.head.y;
+
       for (let i = 0; i < amount; i++) {
-        this.bodies.push({ x: lastBody.x, y: lastBody.y });
+        this.bodies.push({ x, y });
       }
     } else if (amount < 0) {
       for (let i = amount; i < 0; i++) {
@@ -274,21 +277,21 @@ export class OfflineLogic {
     return CollisionResult.Nothing;
   };
 
-  public invokeSpin = (x: number, y: number) => {
-    const angle = Math.atan2(this.velocity.y, this.velocity.x);
+  // public invokeSpin = (x: number, y: number) => {
+  //   const angle = Math.atan2(this.velocity.y, this.velocity.x);
 
-    let angleAmount = -0.05;
-    if (Math.random() < 0.5) {
-      angleAmount = 0.05;
-    }
+  //   let angleAmount = -0.05;
+  //   if (Math.random() < 0.5) {
+  //     angleAmount = 0.05;
+  //   }
 
-    this.spin = {
-      angle,
-      angleAmount,
-      x,
-      y,
-    };
-  };
+  //   this.spin = {
+  //     angle,
+  //     angleAmount,
+  //     x,
+  //     y,
+  //   };
+  // };
 
   public setTarget = (target: Coordinate) => {
     this.lastInput = Input.Target;
