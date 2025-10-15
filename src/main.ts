@@ -12,7 +12,6 @@ export class MiniSnakes {
   );
   private interaction: Interaction;
   private renderer: Renderer = new Renderer(this.app);
-  private timeSinceLastUpdate = 0;
 
   constructor() {
     this.interaction = new Interaction(
@@ -33,13 +32,16 @@ export class MiniSnakes {
 
   async init() {
     await this.app.init({
-      backgroundAlpha: 0.0,
+      backgroundAlpha: 0,
       resizeTo: document.documentElement,
       autoDensity: true,
       resolution: window.devicePixelRatio,
       antialias: false,
+      autoStart: false,
     });
 
+    this.app.ticker.maxFPS = 10;
+    this.app.start();
     this.app.ticker.add(this.onTick);
 
     document.body.appendChild(this.app.canvas);
@@ -47,13 +49,6 @@ export class MiniSnakes {
   }
 
   public onTick = (ticker: Ticker) => {
-    this.timeSinceLastUpdate += ticker.deltaMS;
-
-    if (this.timeSinceLastUpdate < 100) {
-      return;
-    }
-
-    this.timeSinceLastUpdate = 0;
     this.update();
   };
 
@@ -69,7 +64,7 @@ export class MiniSnakes {
       this.logic.exactHead
     );
 
-    // Disable
+    // Disable;
     // const element = document.elementFromPoint(
     //   this.logic.head.x,
     //   this.logic.head.y
