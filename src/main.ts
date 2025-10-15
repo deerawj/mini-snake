@@ -48,7 +48,7 @@ export class MiniSnakes {
     this.update();
   }
 
-  public onTick = (ticker: Ticker) => {
+  public onTick = () => {
     this.update();
   };
 
