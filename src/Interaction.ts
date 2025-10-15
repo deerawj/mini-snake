@@ -4,7 +4,6 @@ export class Interaction {
   snakeHead: SnakeBody;
   onVelocityChange: (velocity: Velocity) => unknown;
   onTargetChange: (target: Coordinate) => unknown;
-  keysPressed: Set<string> = new Set<string>();
 
   constructor(
     snakeHead: SnakeBody,
@@ -16,67 +15,55 @@ export class Interaction {
     this.onTargetChange = onTargetChange;
 
     window.addEventListener("keydown", this.onKeyDown);
-    window.addEventListener("keyup", this.onKeyUp);
     window.addEventListener("pointermove", this.onPointerMove);
   }
 
   public dispose() {
     window.removeEventListener("pointermove", this.onPointerMove);
-    window.removeEventListener("keyup", this.onKeyUp);
     window.removeEventListener("keydown", this.onKeyDown);
   }
 
-  private onKeyUp = (keydown: KeyboardEvent) => {
-    this.keysPressed.delete(keydown.key);
-    this.updateVelocityBasedOnKeyDown();
-  };
-
   private onKeyDown = (keydown: KeyboardEvent) => {
-    this.keysPressed.add(keydown.key);
-    this.updateVelocityBasedOnKeyDown();
-  };
-
-  private onPointerMove = (pointerEvent: PointerEvent) => {
-    this.onTargetChange({ x: pointerEvent.x, y: pointerEvent.y });
-  };
-
-  private updateVelocityBasedOnKeyDown = () => {
     let x = 0;
     let y = 0;
 
-    if (this.keysPressed.has("w")) {
+    if (keydown.key === "w") {
       y -= 1;
     }
 
-    if (this.keysPressed.has("ArrowUp")) {
+    if (keydown.key === "ArrowUp") {
       y -= 1;
     }
 
-    if (this.keysPressed.has("a")) {
+    if (keydown.key === "a") {
       x -= 1;
     }
 
-    if (this.keysPressed.has("ArrowLeft")) {
+    if (keydown.key === "ArrowLeft") {
       x -= 1;
     }
 
-    if (this.keysPressed.has("s")) {
+    if (keydown.key === "s") {
       y += 1;
     }
 
-    if (this.keysPressed.has("ArrowDown")) {
+    if (keydown.key === "ArrowDown") {
       y += 1;
     }
 
-    if (this.keysPressed.has("d")) {
+    if (keydown.key === "d") {
       x += 1;
     }
 
-    if (this.keysPressed.has("ArrowRight")) {
+    if (keydown.key === "ArrowRight") {
       x += 1;
     }
 
     this.onVelocityChange({ x, y });
+  };
+
+  private onPointerMove = (pointerEvent: PointerEvent) => {
+    this.onTargetChange({ x: pointerEvent.x, y: pointerEvent.y });
   };
 
   // public shouldInvokeCirculation = (): boolean => {
