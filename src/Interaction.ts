@@ -24,64 +24,24 @@ export class Interaction implements Disposable {
   }
 
   private onKeyDown = (keydown: KeyboardEvent) => {
-    let x = 0;
-    let y = 0;
+    const keyMap: Record<string, { x: number; y: number }> = {
+      w: { x: 0, y: -1 },
+      ArrowUp: { x: 0, y: -1 },
+      a: { x: -1, y: 0 },
+      ArrowLeft: { x: -1, y: 0 },
+      s: { x: 0, y: 1 },
+      ArrowDown: { x: 0, y: 1 },
+      d: { x: 1, y: 0 },
+      ArrowRight: { x: 1, y: 0 },
+    };
 
-    if (keydown.key === "w") {
-      y -= 1;
+    const velocity = keyMap[keydown.key];
+    if (velocity) {
+      this.onVelocityChange(velocity);
     }
-
-    if (keydown.key === "ArrowUp") {
-      y -= 1;
-    }
-
-    if (keydown.key === "a") {
-      x -= 1;
-    }
-
-    if (keydown.key === "ArrowLeft") {
-      x -= 1;
-    }
-
-    if (keydown.key === "s") {
-      y += 1;
-    }
-
-    if (keydown.key === "ArrowDown") {
-      y += 1;
-    }
-
-    if (keydown.key === "d") {
-      x += 1;
-    }
-
-    if (keydown.key === "ArrowRight") {
-      x += 1;
-    }
-
-    this.onVelocityChange({ x, y });
   };
 
   private onPointerMove = (pointerEvent: PointerEvent) => {
     this.onTargetChange({ x: pointerEvent.x, y: pointerEvent.y });
   };
-
-  // public shouldInvokeCirculation = (): boolean => {
-  //   if (this.primaryInput !== Inputs.Pointer) {
-  //     return false;
-  //   }
-
-  //   const magnitudeX = this.lastPointerMovement.x - this.snakeHead.x;
-  //   const magnitudeY = this.lastPointerMovement.y - this.snakeHead.y;
-  //   if (
-  //     magnitudeX <= 10 &&
-  //     magnitudeX >= -10 &&
-  //     magnitudeY <= 10 &&
-  //     magnitudeY >= -10
-  //   ) {
-  //     return true;
-  //   }
-
-  //   return false;
-  // };
 }
