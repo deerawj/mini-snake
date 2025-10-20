@@ -35,11 +35,8 @@ export class Renderer {
       }
     } else if (difference < 0) {
       for (let i = difference; i < 0; i++) {
-        const bodyGraphicContainer = new Container();
-        const bodyGraphic = this.newPixel("gray");
-        bodyGraphicContainer.addChild(bodyGraphic);
-
-        this.bodies.addChild(bodyGraphicContainer);
+        const body = this.newPixel("gray");
+        this.bodies.addChild(body);
       }
     }
 
@@ -49,8 +46,7 @@ export class Renderer {
         return;
       }
 
-      body.position.x = newBody.x;
-      body.position.y = newBody.y;
+      body.position.set(newBody.x, newBody.y);
     });
 
     this.normalfood.position.set(normalfood.x, normalfood.y);
@@ -67,6 +63,7 @@ export class Renderer {
         color: "gray",
       });
     pixel.alpha = 0.2;
+    pixel.position.set(0 - GRID_SIZE, 0 - GRID_SIZE);
     return pixel;
   }
 }
