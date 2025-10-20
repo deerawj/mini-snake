@@ -1,6 +1,6 @@
 import type { Coordinate, SnakeBody, Velocity } from "./OfflineLogic";
 
-export class Interaction {
+export class Interaction implements Disposable {
   snakeHead: SnakeBody;
   onVelocityChange: (velocity: Velocity) => unknown;
   onTargetChange: (target: Coordinate) => unknown;
@@ -18,7 +18,7 @@ export class Interaction {
     window.addEventListener("pointermove", this.onPointerMove);
   }
 
-  public dispose() {
+  [Symbol.dispose](): void {
     window.removeEventListener("pointermove", this.onPointerMove);
     window.removeEventListener("keydown", this.onKeyDown);
   }

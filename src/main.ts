@@ -1,9 +1,9 @@
 import { OfflineLogic } from "./OfflineLogic";
 import { Interaction } from "./Interaction";
-import { Application, Ticker } from "pixi.js";
+import { Application } from "pixi.js";
 import { Renderer } from "./Renderer";
 
-export class MiniSnakes {
+export class MiniSnakes implements Disposable {
   private app: Application = new Application();
 
   private logic: OfflineLogic = new OfflineLogic(
@@ -21,6 +21,10 @@ export class MiniSnakes {
     );
 
     window.addEventListener("resize", this.onResize);
+  }
+
+  [Symbol.dispose](): void {
+    this.interaction[Symbol.dispose]();
   }
 
   private onResize = () => {
@@ -61,23 +65,7 @@ export class MiniSnakes {
       this.logic.normalfood,
       this.logic.specialFood,
       this.logic.poisonFood,
-      this.logic.exactHead
     );
-
-    // Disable;
-    // const element = document.elementFromPoint(
-    //   this.logic.head.x,
-    //   this.logic.head.y
-    // ) as HTMLElement | null;
-
-    // if (element?.tagName === "A") {
-    //   // Optionally make it focusable if it's not
-    //   if (!element.hasAttribute("tabindex")) {
-    //     element.setAttribute("tabindex", "-1");
-    //   }
-
-    //   element.focus();
-    // }
   };
 }
 
