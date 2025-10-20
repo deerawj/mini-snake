@@ -1,4 +1,4 @@
-import { OfflineLogic } from "./OfflineLogic";
+import { DEFAULT_GRID_SIZE, OfflineLogic } from "./OfflineLogic";
 import { Interaction } from "./Interaction";
 import { Application } from "pixi.js";
 import { Renderer } from "./Renderer";
@@ -6,12 +6,12 @@ import { Renderer } from "./Renderer";
 export class MiniSnakes implements Disposable {
   private app: Application = new Application();
 
-  private logic: OfflineLogic = new OfflineLogic(
-    document.documentElement.clientWidth,
-    document.documentElement.clientHeight
-  );
+  private logic: OfflineLogic = new OfflineLogic({
+    width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight
+  });
   private interaction: Interaction;
-  private renderer: Renderer = new Renderer(this.app);
+  private renderer: Renderer = new Renderer(this.app, DEFAULT_GRID_SIZE);
 
   constructor() {
     this.interaction = new Interaction(

@@ -1,10 +1,17 @@
-export const GRID_SIZE = 20;
-export const STARTING_LENGTH = 10;
+export const DEFAULT_GRID_SIZE = 20;
+export const DEFAULT_STARTING_LENGTH = 10;
 
 export type Coordinate = {
   x: number;
   y: number;
 };
+
+export type Config = {
+  width: number;
+  height: number;
+  gridSize: number;
+  startingLength: number
+}
 
 export type SnakeBody = Coordinate;
 export type Food = Coordinate;
@@ -23,13 +30,6 @@ enum Direction {
   Down,
   Right,
 }
-
-type Spin = {
-  angle: number;
-  angleAmount: number;
-  x: number;
-  y: number;
-};
 
 enum Input {
   Target,
@@ -57,33 +57,33 @@ export class OfflineLogic {
   nextVelocity: Velocity | undefined;
   nextNextVelocity: Velocity | undefined;
 
-  velocity: Velocity | undefined = generateRandomVelocity();
+  velocity: Velocity | undefined;
   target: Coordinate | undefined;
 
   currentDirection: Direction = Direction.Right;
 
   private width: number;
   private height: number;
-
-  spin: Spin | undefined;
+  private gridSize: number;
 
   updatesSinceLastTurn: number = 0;
 
-  constructor(width: number, height: number) {
-    this.width = width;
-    this.height = height;
+  constructor(config: Partial<Config>) {
+    this.width = config.width ?? window.innerWidth;
+    this.height = config.height ?? window.innerHeight;
+    this.gridSize = config.gridSize ?? DEFAULT_GRID_SIZE;
 
-    this.head = generateRandomCoordinate(this.width, this.height);
+    this.velocity = this.generateRandomVelocity();
+
+    this.head = this.generateRandomCoordinate(this.width, this.height);
     this.exactHead = { x: this.head.x, y: this.head.y };
-    this.normalfood = generateRandomCoordinate(this.width, this.height);
-    this.specialFood = generateRandomCoordinate(this.width, this.height);
-    this.poisonFood = generateRandomCoordinate(this.width, this.height);
-    this.bodies = Array.from({ length: STARTING_LENGTH }, () => ({
+    this.normalfood = this.generateRandomCoordinate(this.width, this.height);
+    this.specialFood = this.generateRandomCoordinate(this.width, this.height);
+    this.poisonFood = this.generateRandomCoordinate(this.width, this.height);
+    this.bodies = Array.from({ length: config.startingLength ?? DEFAULT_STARTING_LENGTH }, () => ({
       x: this.head.x,
       y: this.head.y,
     }));
-
-    // this.invokeSpin(0, 0);
   }
 
   public setWidthAndHeight = (width: number, height: number) => {
@@ -156,7 +156,7 @@ export class OfflineLogic {
       value.y < 0 ||
       value.y > this.height
     ) {
-      return generateRandomCoordinate(this.width, this.height);
+      return this.generateRandomCoordinate(this.width, this.height);
     }
 
     return value;
@@ -178,13 +178,13 @@ export class OfflineLogic {
     this.setDirectionFromVelocity();
 
     if (this.currentDirection === Direction.Up) {
-      this.head.y -= GRID_SIZE;
+      this.head.y -= this.gridSize;
     } else if (this.currentDirection === Direction.Left) {
-      this.head.x -= GRID_SIZE;
+      this.head.x -= this.gridSize;
     } else if (this.currentDirection === Direction.Down) {
-      this.head.y += GRID_SIZE;
+      this.head.y += this.gridSize;
     } else if (this.currentDirection === Direction.Right) {
-      this.head.x += GRID_SIZE;
+      this.head.x += this.gridSize;
     }
 
     this.bodies.unshift({ x: this.head.x, y: this.head.y });
@@ -193,7 +193,7 @@ export class OfflineLogic {
     let wrappedAround = false;
 
     if (this.head.x < 0) {
-      this.head.x = floorToGrid(this.width);
+      this.head.x = this.floorToGrid(this.width);
       wrappedAround = true;
     } else if (this.head.x > this.width) {
       this.head.x = 0;
@@ -201,7 +201,7 @@ export class OfflineLogic {
     }
 
     if (this.head.y < 0) {
-      this.head.y = floorToGrid(this.height);
+      this.head.y = this.floorToGrid(this.height);
       wrappedAround = true;
     } else if (this.head.y > this.height) {
       this.head.y = 0;
@@ -216,13 +216,13 @@ export class OfflineLogic {
     const collision = this.checkForCollision();
     if (collision === CollisionResult.NormalFood) {
       this.addLength(1);
-      this.normalfood = generateRandomCoordinate(this.width, this.height);
+      this.normalfood = this.generateRandomCoordinate(this.width, this.height);
     } else if (collision === CollisionResult.SpecialFood) {
       this.addLength(4);
-      this.specialFood = generateRandomCoordinate(this.width, this.height);
+      this.specialFood = this.generateRandomCoordinate(this.width, this.height);
     } else if (collision === CollisionResult.PoisonFood) {
       this.addLength(-6);
-      this.poisonFood = generateRandomCoordinate(this.width, this.height);
+      this.poisonFood = this.generateRandomCoordinate(this.width, this.height);
     }
 
     this.updatesSinceLastTurn += 1;
@@ -277,22 +277,6 @@ export class OfflineLogic {
     return CollisionResult.Nothing;
   };
 
-  // public invokeSpin = (x: number, y: number) => {
-  //   const angle = Math.atan2(this.velocity.y, this.velocity.x);
-
-  //   let angleAmount = -0.05;
-  //   if (Math.random() < 0.5) {
-  //     angleAmount = 0.05;
-  //   }
-
-  //   this.spin = {
-  //     angle,
-  //     angleAmount,
-  //     x,
-  //     y,
-  //   };
-  // };
-
   public setTarget = (target: Coordinate) => {
     this.lastInput = Input.Target;
 
@@ -305,7 +289,7 @@ export class OfflineLogic {
       return;
     }
 
-    const normalizedVelocity = normalizeVelocity(velocity, GRID_SIZE);
+    const normalizedVelocity = normalizeVelocity(velocity, this.gridSize);
 
     if (this.nextVelocity === undefined) {
       this.nextVelocity = normalizedVelocity;
@@ -313,25 +297,25 @@ export class OfflineLogic {
       this.nextNextVelocity = normalizedVelocity;
     }
   };
-}
 
-function generateRandomVelocity(): Velocity {
-  return normalizeVelocity({ x: 0.0, y: 1.0 }, GRID_SIZE);
-}
+  private generateRandomVelocity(): Velocity {
+    return normalizeVelocity({ x: 0.0, y: 1.0 }, this.gridSize);
+  }
 
-function floorToGrid(pixel: number) {
-  return Math.floor(pixel / GRID_SIZE) * GRID_SIZE;
-}
+  private floorToGrid = (pixel: number) => {
+    return Math.floor(pixel / this.gridSize) * this.gridSize;
+  }
 
-function generateRandomCoordinate(width: number, height: number): Coordinate {
-  const randInt = (max: number) => {
-    return Math.floor(Math.random() * max);
-  };
+  private generateRandomCoordinate(width: number, height: number): Coordinate {
+    const randInt = (max: number) => {
+      return Math.floor(Math.random() * max);
+    };
 
-  return {
-    x: floorToGrid(randInt(width)),
-    y: floorToGrid(randInt(height)),
-  };
+    return {
+      x: this.floorToGrid(randInt(width)),
+      y: this.floorToGrid(randInt(height)),
+    };
+  }
 }
 
 export function normalizeVelocity(velocity: Velocity, constant: number) {

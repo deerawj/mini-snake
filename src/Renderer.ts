@@ -1,15 +1,23 @@
 import { Application, Container, Graphics, type FillInput } from "pixi.js";
-import { GRID_SIZE, type Coordinate } from "./OfflineLogic";
+import { DEFAULT_GRID_SIZE, type Coordinate } from "./OfflineLogic";
 
 export class Renderer {
-  private head: Graphics = this.newPixel("rgb(255, 81, 0)");
   private bodies: Container = new Container();
+  private head;
+  private normalfood;
+  private specialFood;
+  private poisonFood;
 
-  private normalfood = this.newPixel("rgb(0, 156, 52)");
-  private specialFood = this.newPixel("rgb(107, 0, 168)");
-  private poisonFood = this.newPixel("rgba(155, 10, 0, 1)");
+  private gridSize: number;
 
-  constructor(app: Application) {
+  constructor(app: Application, gridSize: number | undefined) {
+    this.gridSize = gridSize ?? DEFAULT_GRID_SIZE;
+
+    this.head = this.newPixel("rgb(255, 81, 0)");
+    this.normalfood = this.newPixel("rgb(0, 156, 52)");
+    this.specialFood = this.newPixel("rgb(107, 0, 168)");
+    this.poisonFood = this.newPixel("rgba(155, 10, 0, 1)");
+
     app.stage.addChild(this.bodies);
     app.stage.addChild(this.head);
     app.stage.addChild(this.normalfood);
@@ -54,16 +62,16 @@ export class Renderer {
     this.poisonFood.position.set(poisonFood.x, poisonFood.y);
   };
 
-  private newPixel(fill: FillInput) {
+  private newPixel = (fill: FillInput) => {
     const pixel = new Graphics()
-      .rect(0, 0, GRID_SIZE, GRID_SIZE)
+      .rect(0, 0, this.gridSize, this.gridSize)
       .fill(fill)
       .stroke({
         width: 2,
         color: "gray",
       });
     pixel.alpha = 0.2;
-    pixel.position.set(0 - GRID_SIZE, 0 - GRID_SIZE);
+    pixel.position.set(0 - this.gridSize, 0 - this.gridSize);
     return pixel;
   }
 }
